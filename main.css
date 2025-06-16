@@ -317,13 +317,19 @@ body {
   font-size: 14px;
 }
 
-/* Game Container */
+/* Game Container - Full viewport */
 .game-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   width: 100%;
   height: 100vh;
   display: flex;
   flex-direction: column;
   background: var(--terminal-bg);
+  overflow: hidden; /* Prevent any overflow */
 }
 
 /* Game Header */
@@ -349,47 +355,66 @@ body {
   font-weight: bold;
 }
 
-/* Game Main */
-.game-main {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-/* Game Output */
-.game-output {
-  flex: 1;
-  padding: 20px;
+/* Terminal Viewport - The "CRT Screen" */
+.game-terminal {
+  flex: 1; /* Take remaining space between header and input/footer */
   overflow-y: auto;
   overflow-x: hidden;
-  font-size: 16px;
-  line-height: 1.8;
-  height: 80vh;
-  scroll-behavior: smooth;
+  padding: 20px;
   position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
+  scroll-behavior: smooth;
+  background: var(--terminal-bg);
+  border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
 }
 
-.game-output::-webkit-scrollbar {
+/* Scroll indicator at top */
+.game-terminal::before {
+  content: '▲ SCROLL UP FOR MORE ▲';
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: #000;
+  color: var(--primary-color);
+  text-align: center;
+  padding: 5px;
+  font-size: 10px;
+  opacity: 0;
+  transition: opacity 0.3s;
+  z-index: 50;
+}
+
+.game-terminal.scrolled::before {
+  opacity: 0.8;
+}
+
+.game-terminal::-webkit-scrollbar {
   width: 12px;
 }
 
-.game-output::-webkit-scrollbar-track {
+.game-terminal::-webkit-scrollbar-track {
   background: #001100;
   border: 1px solid var(--border-color);
 }
 
-.game-output::-webkit-scrollbar-thumb {
+.game-terminal::-webkit-scrollbar-thumb {
   background: var(--primary-color);
   border: 1px solid #001100;
 }
 
-.game-output::-webkit-scrollbar-thumb:hover {
+.game-terminal::-webkit-scrollbar-thumb:hover {
   background: #00cc00;
 }
+
+/* Game Output - Story content container */
+.game-output {
+  min-height: 100%;
+  padding-bottom: 40px; /* Some bottom padding */
+  font-size: 16px;
+  line-height: 1.8;
+}
+
 
 .story-text {
   color: var(--primary-color);
@@ -398,10 +423,6 @@ body {
   animation: fadeIn 0.5s ease-in;
 }
 
-/* Ensure text doesn't overlap with choices */
-#game-output {
-  margin-bottom: 20px;
-}
 
 /* User Choice Styling */
 .user-choice {
@@ -439,15 +460,13 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Choices */
+/* Choices - Inline with story flow */
 .choices {
-  position: sticky;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.95);
+  margin: 30px 0;
   padding: 20px 0;
-  margin-top: 20px;
   border-top: 1px solid var(--border-color);
-  display: none; /* Hidden by default */
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
   flex-direction: column;
   gap: 10px;
 }
@@ -477,12 +496,13 @@ body {
   transform: none !important;
 }
 
-/* Input Section */
+/* Input Section - Fixed at bottom */
 .input-section {
   flex-shrink: 0;
   background: linear-gradient(to top, #111 0%, #000 100%);
   border-top: 2px solid var(--border-color);
   padding: 15px 20px;
+  z-index: 10; /* Ensure it stays above terminal content */
 }
 
 .input-form {
@@ -508,11 +528,13 @@ body {
   caret-color: var(--primary-color);
 }
 
-/* Game Footer */
+/* Game Footer - Fixed at bottom */
 .game-footer {
+  flex-shrink: 0;
   background: var(--terminal-bg);
   border-top: 1px solid var(--border-color);
   padding: 10px 20px;
+  z-index: 10; /* Ensure it stays above terminal content */
 }
 
 .game-controls {

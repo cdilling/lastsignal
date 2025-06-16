@@ -1,6 +1,7 @@
 export class TextRenderer {
   constructor() {
     this.outputElement = null;
+    this.terminal = null;
     this.currentLine = null;
     this.typewriterSpeed = 30; // ms per character
     this.linePause = 200; // ms pause between lines
@@ -10,6 +11,7 @@ export class TextRenderer {
 
   setOutputElement(element) {
     this.outputElement = element;
+    this.terminal = document.getElementById('game-terminal');
   }
 
   async displayText(text) {
@@ -90,11 +92,14 @@ export class TextRenderer {
   }
 
   scrollToBottom() {
-    const terminal = document.getElementById('game-terminal') || this.outputElement.parentElement;
-    // Use requestAnimationFrame for smooth scrolling
+    if (!this.terminal) {
+      this.terminal = document.getElementById('game-terminal');
+    }
+    
     requestAnimationFrame(() => {
-      if (terminal) {
-        terminal.scrollTop = terminal.scrollHeight;
+      if (this.terminal) {
+        // Simply scroll to the bottom of the content
+        this.terminal.scrollTop = this.terminal.scrollHeight;
       }
     });
   }

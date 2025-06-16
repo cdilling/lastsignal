@@ -29,6 +29,9 @@ class LastSignalGame {
     // Set up text renderer output element
     this.textRenderer.setOutputElement(document.getElementById('game-output'));
     
+    // Set up scroll detection
+    this.setupScrollDetection();
+    
     // Check if we have an API key from env
     if (this.apiKey) {
       // We have a key, skip the API screen
@@ -118,12 +121,9 @@ class LastSignalGame {
   }
 
   async continueStory() {
-    // Clear choices while story is being displayed
-    const choicesContainer = document.getElementById('choices');
-    if (choicesContainer) {
-      choicesContainer.innerHTML = '';
-      choicesContainer.style.display = 'none';
-    }
+    // Remove any existing choices from the output
+    const existingChoices = document.querySelectorAll('.choices');
+    existingChoices.forEach(el => el.remove());
     
     while (this.story.canContinue) {
       let text = this.story.Continue();
@@ -180,14 +180,20 @@ class LastSignalGame {
   }
 
   displayChoices(choices) {
-    const choicesContainer = document.getElementById('choices');
-    
-    // Clear any existing choices
-    choicesContainer.innerHTML = '';
-    choicesContainer.style.display = 'flex';
+    const outputElement = document.getElementById('game-output');
     
     // Clear previous choice buttons array
     this.choiceButtons = [];
+    
+    // Check if we have choices to display
+    if (choices.length === 0) {
+      this.displayText('[ THE END ]');
+      return;
+    }
+    
+    // Create choices container inline with story
+    const choicesContainer = document.createElement('div');
+    choicesContainer.className = 'choices';
     
     choices.forEach((choice, index) => {
       const button = document.createElement('button');
@@ -210,15 +216,18 @@ class LastSignalGame {
       this.choiceButtons.push(button);
       choicesContainer.appendChild(button);
     });
+    
+    // Append choices to the game output
+    outputElement.appendChild(choicesContainer);
+    
+    // Scroll to show the choices
+    this.textRenderer.scrollToBottom();
   }
 
   async selectChoice(choiceIndex) {
-    // Hide choice buttons
-    const choicesContainer = document.getElementById('choices');
-    if (choicesContainer) {
-      choicesContainer.innerHTML = '';
-      choicesContainer.style.display = 'none';
-    }
+    // Remove the choices container from the output
+    const choicesContainers = document.querySelectorAll('.choices');
+    choicesContainers.forEach(el => el.remove());
     
     // Process choice through AI if configured
     const choice = this.story.currentChoices[choiceIndex];
@@ -254,6 +263,19 @@ class LastSignalGame {
       }
     });
   }
+  
+  setupScrollDetection() {
+    const terminal = document.getElementById('game-terminal');
+    if (terminal) {
+      terminal.addEventListener('scroll', () => {
+        if (terminal.scrollTop > 50) {
+          terminal.classList.add('scrolled');
+        } else {
+          terminal.classList.remove('scrolled');
+        }
+      });
+    }
+  }
 
   async handlePlayerInput(input) {
     // Check for start commands first
@@ -286,9 +308,11 @@ class LastSignalGame {
         
         // Show options to continue
         await this.displayText("");
-        const choicesContainer = document.getElementById('choices');
-        choicesContainer.innerHTML = '';
-        choicesContainer.style.display = 'flex';
+        const outputElement = document.getElementById('game-output');
+        
+        // Create inline choices for AI conversation
+        const choicesContainer = document.createElement('div');
+        choicesContainer.className = 'choices';
         
         const continueBtn = document.createElement('button');
         continueBtn.className = 'choice-btn';
@@ -302,6 +326,10 @@ class LastSignalGame {
         
         choicesContainer.appendChild(continueBtn);
         choicesContainer.appendChild(endBtn);
+        outputElement.appendChild(choicesContainer);
+        
+        // Scroll to show choices
+        this.textRenderer.scrollToBottom();
       } else if (this.story.currentChoices.length === 0) {
         // Generate AI response based on free-form input
         const context = this.getGameContext();
@@ -312,20 +340,18 @@ class LastSignalGame {
   }
   
   async continueAIConversation() {
-    const choicesContainer = document.getElementById('choices');
-    if (choicesContainer) {
-      choicesContainer.innerHTML = '';
-      choicesContainer.style.display = 'none';
-    }
+    // Remove existing choices
+    const choicesContainers = document.querySelectorAll('.choices');
+    choicesContainers.forEach(el => el.remove());
+    
     await this.displayText("What would you like to say?");
   }
   
   async endAIConversation() {
-    const choicesContainer = document.getElementById('choices');
-    if (choicesContainer) {
-      choicesContainer.innerHTML = '';
-      choicesContainer.style.display = 'none';
-    }
+    // Remove existing choices
+    const choicesContainers = document.querySelectorAll('.choices');
+    choicesContainers.forEach(el => el.remove());
+    
     this.story.variablesState["current_ai"] = "";
     await this.continueStory();
   }
