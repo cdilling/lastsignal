@@ -55,27 +55,30 @@
         </div>
       </header>
 
-      <main class="game-main">
-        <!-- Game Output -->
+      <!-- Scrollable Terminal Area -->
+      <div id="game-terminal" class="game-terminal">
         <div id="game-output" class="game-output">
           <!-- Story text will appear here -->
         </div>
-
-        <!-- Input Section -->
-        <div class="input-section">
-          <form id="input-form" class="input-form">
-            <span class="prompt">&gt;</span>
-            <input 
-              type="text" 
-              id="player-input" 
-              class="player-input" 
-              placeholder="Enter command or choice..." 
-              autocomplete="off"
-              autofocus
-            >
-          </form>
+        <div id="choices" class="choices">
+          <!-- Choice buttons will appear here -->
         </div>
-      </main>
+      </div>
+
+      <!-- Input Section -->
+      <div class="input-section">
+        <form id="input-form" class="input-form">
+          <span class="prompt">&gt;</span>
+          <input 
+            type="text" 
+            id="player-input" 
+            class="player-input" 
+            placeholder="Enter command or choice..." 
+            autocomplete="off"
+            autofocus
+          >
+        </form>
+      </div>
 
       <footer class="game-footer">
         <div class="game-controls">
@@ -117,5 +120,46 @@
 
   <!-- Load Scripts -->
   <script type="module" src="main.js"></script>
+  <script>
+    // Global settings functions
+    function closeSettings() {
+      const modal = document.getElementById('settings-modal');
+      if (modal) modal.style.display = 'none';
+    }
+    
+    // Settings handlers
+    document.addEventListener('DOMContentLoaded', () => {
+      // Text speed handler
+      const textSpeedSlider = document.getElementById('text-speed');
+      if (textSpeedSlider) {
+        textSpeedSlider.addEventListener('change', (e) => {
+          if (window.game && window.game.textRenderer) {
+            window.game.textRenderer.setTypewriterSpeed(parseInt(e.target.value));
+          }
+        });
+      }
+      
+      // Typing effects handler
+      const typingEffectsCheckbox = document.getElementById('typing-effects');
+      if (typingEffectsCheckbox) {
+        typingEffectsCheckbox.addEventListener('change', (e) => {
+          if (window.game && window.game.textRenderer) {
+            window.game.textRenderer.setTypewriterEnabled(e.target.checked);
+          }
+        });
+      }
+      
+      // CRT effects handler
+      const crtEffectsCheckbox = document.getElementById('crt-effects');
+      if (crtEffectsCheckbox) {
+        crtEffectsCheckbox.addEventListener('change', (e) => {
+          const crtOverlay = document.querySelector('.crt-overlay');
+          const scanlines = document.querySelector('.scanlines');
+          if (crtOverlay) crtOverlay.style.display = e.target.checked ? 'block' : 'none';
+          if (scanlines) scanlines.style.display = e.target.checked ? 'block' : 'none';
+        });
+      }
+    });
+  </script>
 </body>
 </html>

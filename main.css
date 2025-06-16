@@ -365,24 +365,73 @@ body {
   overflow-x: hidden;
   font-size: 16px;
   line-height: 1.8;
+  height: 80vh;
+  scroll-behavior: smooth;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
 }
 
 .game-output::-webkit-scrollbar {
-  width: 10px;
+  width: 12px;
 }
 
 .game-output::-webkit-scrollbar-track {
-  background: var(--terminal-bg);
-}
-
-.game-output::-webkit-scrollbar-thumb {
-  background: var(--secondary-color);
+  background: #001100;
   border: 1px solid var(--border-color);
 }
 
+.game-output::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border: 1px solid #001100;
+}
+
+.game-output::-webkit-scrollbar-thumb:hover {
+  background: #00cc00;
+}
+
 .story-text {
-  margin-bottom: 15px;
+  color: var(--primary-color);
+  margin: 10px 0;
+  line-height: 1.6;
   animation: fadeIn 0.5s ease-in;
+}
+
+/* Ensure text doesn't overlap with choices */
+#game-output {
+  margin-bottom: 20px;
+}
+
+/* User Choice Styling */
+.user-choice {
+  color: #00ffaa;
+  font-style: italic;
+  margin: 15px 0;
+  padding-left: 20px;
+  position: relative;
+  animation: fadeIn 0.5s ease-in;
+  border-left: 2px solid #00ffaa;
+}
+
+.user-choice::before {
+  content: '▶';
+  position: absolute;
+  left: 0;
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+/* Choice Separator */
+.choice-separator {
+  height: 1px;
+  background: var(--primary-color);
+  margin: 10px 0;
+  opacity: 0.3;
 }
 
 @keyframes fadeIn {
@@ -392,8 +441,13 @@ body {
 
 /* Choices */
 .choices {
-  margin: 20px 0;
-  display: flex;
+  position: sticky;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.95);
+  padding: 20px 0;
+  margin-top: 20px;
+  border-top: 1px solid var(--border-color);
+  display: none; /* Hidden by default */
   flex-direction: column;
   gap: 10px;
 }
@@ -410,15 +464,22 @@ body {
   transition: all 0.3s ease;
 }
 
-.choice-btn:hover {
+.choice-btn:hover:not(:disabled) {
   background: var(--secondary-color);
   border-color: var(--primary-color);
   box-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
   transform: translateX(5px);
 }
 
+.choice-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
 /* Input Section */
 .input-section {
+  flex-shrink: 0;
   background: linear-gradient(to top, #111 0%, #000 100%);
   border-top: 2px solid var(--border-color);
   padding: 15px 20px;

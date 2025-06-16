@@ -4,6 +4,7 @@ import { Parser } from './parser.js';
 import { SaveSystem } from './save-system.js';
 import { compiledStory } from './src/story/working-game.js';
 import AINarrator from './src/js/ai-narrator.js';
+import { TextRenderer } from './text-renderer.js';
 
 class LastSignalGame {
   constructor() {
@@ -12,15 +13,21 @@ class LastSignalGame {
     this.saveSystem = new SaveSystem();
     this.story = null;
     this.aiNarrator = null;
+    this.textRenderer = new TextRenderer();
     this.apiKey = localStorage.getItem('openai_api_key') || import.meta.env.VITE_OPENAI_API_KEY || null;
     this.aiEnabled = false;
+    this.choiceButtons = [];
     
     this.setupUI();
+    this.setupKeyboardNavigation();
   }
 
   setupUI() {
     const gameContainer = document.getElementById('game-container');
     const apiKeySection = document.getElementById('api-key-section');
+    
+    // Set up text renderer output element
+    this.textRenderer.setOutputElement(document.getElementById('game-output'));
     
     // Check if we have an API key from env
     if (this.apiKey) {
@@ -98,19 +105,25 @@ class LastSignalGame {
     } catch (error) {
       console.error('Failed to initialize game:', error);
       // If there's an error, try to continue with the story anyway
-      this.displayText('Welcome to The Last Signal...\n');
-      this.displayText('Type "begin" or "wake up" to start your journey.\n');
+      await this.displayText('Welcome to The Last Signal...');
+      await this.displayText('Type "begin" or "wake up" to start your journey.');
     }
   }
 
-  startGame() {
-    this.displayText('=== THE LAST SIGNAL ===\n');
-    this.displayText('A sci-fi text adventure\n\n');
-    this.displayText('Type "begin" to start your journey...\n');
+  async startGame() {
+    await this.displayText('=== THE LAST SIGNAL ===');
+    await this.displayText('A sci-fi text adventure');
+    await this.displayText('');
+    await this.displayText('Type "begin" to start your journey...');
   }
 
   async continueStory() {
-    const output = document.getElementById('game-output');
+    // Clear choices while story is being displayed
+    const choicesContainer = document.getElementById('choices');
+    if (choicesContainer) {
+      choicesContainer.innerHTML = '';
+      choicesContainer.style.display = 'none';
+    }
     
     while (this.story.canContinue) {
       let text = this.story.Continue();
@@ -131,15 +144,15 @@ class LastSignalGame {
       // Check for AI generation tags
       if (text.includes('[AI_GENERATE]')) {
         const aiText = await this.handleAIGeneration(text);
-        this.displayText(aiText);
+        await this.displayText(aiText);
       } else {
-        this.displayText(text);
+        await this.displayText(text);
       }
     }
     
     // Display choices if available
     if (this.story.currentChoices.length > 0) {
-      this.displayChoices(this.story.currentChoices);
+      await this.displayChoices(this.story.currentChoices);
     }
   }
 
@@ -154,16 +167,8 @@ class LastSignalGame {
     return text;
   }
 
-  displayText(text) {
-    const output = document.getElementById('game-output');
-    const p = document.createElement('p');
-    p.className = 'story-text';
-    p.innerHTML = this.formatText(text);
-    output.appendChild(p);
-    output.scrollTop = output.scrollHeight;
-    
-    // Add typing effect
-    this.addTypingEffect(p);
+  async displayText(text) {
+    return this.textRenderer.displayText(text);
   }
 
   formatText(text) {
@@ -174,42 +179,46 @@ class LastSignalGame {
       .replace(/\n/g, '<br>');
   }
 
-  addTypingEffect(element) {
-    const text = element.textContent;
-    element.textContent = '';
-    element.style.visibility = 'visible';
-    
-    let i = 0;
-    const typeInterval = setInterval(() => {
-      if (i < text.length) {
-        element.textContent += text.charAt(i);
-        i++;
-      } else {
-        clearInterval(typeInterval);
-      }
-    }, 30);
-  }
-
   displayChoices(choices) {
-    const output = document.getElementById('game-output');
-    const choicesDiv = document.createElement('div');
-    choicesDiv.className = 'choices';
+    const choicesContainer = document.getElementById('choices');
+    
+    // Clear any existing choices
+    choicesContainer.innerHTML = '';
+    choicesContainer.style.display = 'flex';
+    
+    // Clear previous choice buttons array
+    this.choiceButtons = [];
     
     choices.forEach((choice, index) => {
       const button = document.createElement('button');
       button.className = 'choice-btn';
       button.textContent = `${index + 1}. ${choice.text}`;
-      button.addEventListener('click', () => this.selectChoice(choice.index));
-      choicesDiv.appendChild(button);
+      button.addEventListener('click', async () => {
+        // Disable all buttons immediately
+        this.disableAllChoices();
+        
+        // Display the user's choice in the terminal
+        await this.textRenderer.displayUserChoice(choice.text);
+        
+        // Small pause for effect
+        await this.sleep(300);
+        
+        // Process the choice
+        this.selectChoice(choice.index);
+      });
+      
+      this.choiceButtons.push(button);
+      choicesContainer.appendChild(button);
     });
-    
-    output.appendChild(choicesDiv);
   }
 
   async selectChoice(choiceIndex) {
-    // Remove choice buttons
-    const choices = document.querySelector('.choices');
-    if (choices) choices.remove();
+    // Hide choice buttons
+    const choicesContainer = document.getElementById('choices');
+    if (choicesContainer) {
+      choicesContainer.innerHTML = '';
+      choicesContainer.style.display = 'none';
+    }
     
     // Process choice through AI if configured
     const choice = this.story.currentChoices[choiceIndex];
@@ -219,18 +228,38 @@ class LastSignalGame {
     // Continue story with choice
     this.story.ChooseChoiceIndex(choiceIndex);
     
-    // Display player choice
-    this.displayText(`> ${choice.text}`);
-    
     // Continue story
     this.continueStory();
+  }
+
+  disableAllChoices() {
+    this.choiceButtons.forEach(button => {
+      button.disabled = true;
+      button.style.opacity = '0.5';
+      button.style.cursor = 'not-allowed';
+    });
+  }
+
+  sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  setupKeyboardNavigation() {
+    document.addEventListener('keydown', (e) => {
+      if (e.key >= '1' && e.key <= '9') {
+        const index = parseInt(e.key) - 1;
+        if (index < this.choiceButtons.length && !this.choiceButtons[index].disabled) {
+          this.choiceButtons[index].click();
+        }
+      }
+    });
   }
 
   async handlePlayerInput(input) {
     // Check for start commands first
     const startCommands = ['begin', 'start', 'wake up', 'wake', 'new game', 'play'];
     if (startCommands.includes(input.toLowerCase().trim())) {
-      this.displayText(`> ${input}\n`);
+      await this.textRenderer.displayUserChoice(input);
       this.beginStory();
       return;
     }
@@ -243,7 +272,7 @@ class LastSignalGame {
       this.handleGameCommand(command);
     } else {
       // Process as story input
-      this.displayText(`> ${input}`);
+      await this.textRenderer.displayUserChoice(input);
       
       // Check if we're in an AI conversation
       const currentAI = this.story.variablesState["current_ai"];
@@ -256,14 +285,23 @@ class LastSignalGame {
         this.displayText(response);
         
         // Show options to continue
-        this.displayText("\n");
-        const continueDiv = document.createElement('div');
-        continueDiv.className = 'choices';
-        continueDiv.innerHTML = `
-          <button class="choice-btn" onclick="game.continueAIConversation()">Continue talking</button>
-          <button class="choice-btn" onclick="game.endAIConversation()">End conversation</button>
-        `;
-        document.getElementById('game-output').appendChild(continueDiv);
+        await this.displayText("");
+        const choicesContainer = document.getElementById('choices');
+        choicesContainer.innerHTML = '';
+        choicesContainer.style.display = 'flex';
+        
+        const continueBtn = document.createElement('button');
+        continueBtn.className = 'choice-btn';
+        continueBtn.textContent = 'Continue talking';
+        continueBtn.onclick = () => this.continueAIConversation();
+        
+        const endBtn = document.createElement('button');
+        endBtn.className = 'choice-btn';
+        endBtn.textContent = 'End conversation';
+        endBtn.onclick = () => this.endAIConversation();
+        
+        choicesContainer.appendChild(continueBtn);
+        choicesContainer.appendChild(endBtn);
       } else if (this.story.currentChoices.length === 0) {
         // Generate AI response based on free-form input
         const context = this.getGameContext();
@@ -273,22 +311,28 @@ class LastSignalGame {
     }
   }
   
-  continueAIConversation() {
-    const choices = document.querySelector('.choices');
-    if (choices) choices.remove();
-    this.displayText("What would you like to say?\n");
+  async continueAIConversation() {
+    const choicesContainer = document.getElementById('choices');
+    if (choicesContainer) {
+      choicesContainer.innerHTML = '';
+      choicesContainer.style.display = 'none';
+    }
+    await this.displayText("What would you like to say?");
   }
   
-  endAIConversation() {
-    const choices = document.querySelector('.choices');
-    if (choices) choices.remove();
+  async endAIConversation() {
+    const choicesContainer = document.getElementById('choices');
+    if (choicesContainer) {
+      choicesContainer.innerHTML = '';
+      choicesContainer.style.display = 'none';
+    }
     this.story.variablesState["current_ai"] = "";
-    this.continueStory();
+    await this.continueStory();
   }
   
   beginStory() {
     // Clear the intro text
-    document.getElementById('game-output').innerHTML = '';
+    this.textRenderer.clear();
     
     // Just continue the story from the beginning
     if (this.story) {
