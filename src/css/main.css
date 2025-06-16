@@ -1,0 +1,170 @@
+/* Main stylesheet for The Last Signal */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --bg-color: #0a0a0a;
+    --text-color: #00ff00;
+    --text-dim: #008800;
+    --prompt-color: #00ff00;
+    --border-color: #00ff00;
+    --highlight-color: #00ffff;
+    --error-color: #ff0000;
+    --terminal-font: 'Courier New', Courier, monospace;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: var(--terminal-font);
+    font-size: 16px;
+    line-height: 1.6;
+    overflow: hidden;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#game-container {
+    width: 90%;
+    max-width: 800px;
+    height: 90vh;
+    background-color: #000;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 
+        0 0 20px rgba(0, 255, 0, 0.5),
+        inset 0 0 20px rgba(0, 255, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+#terminal-output {
+    flex-grow: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    margin-bottom: 20px;
+    padding-right: 10px;
+    font-size: 14px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+#terminal-output::-webkit-scrollbar {
+    width: 8px;
+}
+
+#terminal-output::-webkit-scrollbar-track {
+    background: rgba(0, 255, 0, 0.1);
+}
+
+#terminal-output::-webkit-scrollbar-thumb {
+    background: var(--text-dim);
+    border-radius: 4px;
+}
+
+#terminal-output::-webkit-scrollbar-thumb:hover {
+    background: var(--text-color);
+}
+
+#terminal-input-container {
+    display: flex;
+    align-items: center;
+    border-top: 1px solid var(--border-color);
+    padding-top: 10px;
+}
+
+#prompt {
+    color: var(--prompt-color);
+    margin-right: 10px;
+    font-weight: bold;
+}
+
+#terminal-input {
+    flex-grow: 1;
+    background: transparent;
+    border: none;
+    color: var(--text-color);
+    font-family: inherit;
+    font-size: 16px;
+    outline: none;
+    caret-color: var(--text-color);
+}
+
+#terminal-input::selection {
+    background-color: var(--text-color);
+    color: var(--bg-color);
+}
+
+/* Output styling */
+#terminal-output div {
+    margin-bottom: 10px;
+    animation: fadeIn 0.3s ease-in;
+}
+
+#terminal-output .command {
+    color: var(--text-dim);
+    font-style: italic;
+}
+
+#terminal-output .error {
+    color: var(--error-color);
+}
+
+#terminal-output .highlight {
+    color: var(--highlight-color);
+}
+
+#terminal-output .system {
+    color: var(--text-dim);
+    font-style: italic;
+    opacity: 0.8;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+/* Cursor animation */
+#terminal-input:focus::after {
+    content: '_';
+    animation: blink 1s infinite;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    #game-container {
+        width: 95%;
+        height: 95vh;
+        padding: 15px;
+    }
+    
+    body {
+        font-size: 14px;
+    }
+    
+    #terminal-input {
+        font-size: 14px;
+    }
+}

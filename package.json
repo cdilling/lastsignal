@@ -1,0 +1,19 @@
+{
+  "name": "the-last-signal",
+  "version": "1.0.0",
+  "description": "AI-powered text adventure game",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "inkjs": "^2.2.2",
+    "openai": "^5.3.0"
+  },
+  "devDependencies": {
+    "inklecate": "^1.8.1",
+    "vite": "^5.0.0"
+  }
+}

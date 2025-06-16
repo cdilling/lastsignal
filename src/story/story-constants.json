@@ -1,0 +1,125 @@
+{
+  "storyInfo": {
+    "title": "The Last Signal",
+    "author": "Unknown",
+    "version": "1.0.0",
+    "genre": "Science Fiction Horror",
+    "setting": "Space Station Aurora-7"
+  },
+  
+  "characters": {
+    "player": {
+      "name": "Sarah Chen",
+      "role": "Communications Officer",
+      "background": "Experienced officer with 5 years on Aurora-7"
+    },
+    "captain": {
+      "name": "Captain Marcus Webb",
+      "role": "Station Commander",
+      "status": "Missing"
+    },
+    "engineer": {
+      "name": "Dr. Yuki Tanaka",
+      "role": "Chief Engineer",
+      "status": "Missing"
+    }
+  },
+  
+  "locations": {
+    "communications_room": {
+      "id": "communications_room",
+      "name": "Communications Room",
+      "sector": "C-Deck",
+      "status": "Emergency Power"
+    },
+    "command_center": {
+      "id": "command_center",
+      "name": "Command Center",
+      "sector": "A-Deck",
+      "status": "Sealed"
+    },
+    "engineering": {
+      "id": "engineering",
+      "name": "Engineering Bay",
+      "sector": "E-Deck",
+      "status": "Critical"
+    },
+    "crew_quarters": {
+      "id": "crew_quarters",
+      "name": "Crew Quarters",
+      "sector": "B-Deck",
+      "status": "Abandoned"
+    },
+    "medical_bay": {
+      "id": "medical_bay",
+      "name": "Medical Bay",
+      "sector": "B-Deck",
+      "status": "Quarantined"
+    },
+    "observation_deck": {
+      "id": "observation_deck",
+      "name": "Observation Deck",
+      "sector": "A-Deck",
+      "status": "Depressurized"
+    }
+  },
+  
+  "items": {
+    "keycard": {
+      "id": "keycard",
+      "name": "Security Keycard",
+      "description": "Level-3 clearance card with dried blood",
+      "location": "communications_room"
+    },
+    "signal_decoder": {
+      "id": "signal_decoder",
+      "name": "Signal Decoder",
+      "description": "Military-grade decryption device",
+      "location": "command_center"
+    },
+    "emergency_beacon": {
+      "id": "emergency_beacon",
+      "name": "Emergency Beacon",
+      "description": "Last resort distress signal transmitter",
+      "location": "engineering"
+    }
+  },
+  
+  "themes": {
+    "primary": ["isolation", "mystery", "survival"],
+    "secondary": ["trust", "sacrifice", "humanity"],
+    "atmospheric": ["dread", "loneliness", "uncertainty"]
+  },
+  
+  "signal_data": {
+    "origin": "Sector 7",
+    "coordinates": "451.229.886",
+    "frequency": "Unknown",
+    "pattern": "Non-terrestrial",
+    "first_detected": "3 days ago",
+    "status": "Active"
+  },
+  
+  "endings": {
+    "salvation": {
+      "id": "salvation",
+      "type": "good",
+      "description": "Successfully decode the signal and save remaining survivors"
+    },
+    "sacrifice": {
+      "id": "sacrifice",
+      "type": "bittersweet",
+      "description": "Destroy the station to prevent signal spread"
+    },
+    "assimilation": {
+      "id": "assimilation",
+      "type": "bad",
+      "description": "Become part of the signal"
+    },
+    "isolation": {
+      "id": "isolation",
+      "type": "neutral",
+      "description": "Cut off all communications and drift alone"
+    }
+  }
+}

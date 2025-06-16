@@ -1,0 +1,345 @@
+/* CRT Monitor Effects */
+
+/* CRT Overlay - Screen curvature and vignette */
+.crt-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 999;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0.1) 50%,
+    rgba(0, 0, 0, 0.3) 100%
+  );
+}
+
+/* Scanlines Effect */
+.scanlines {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 998;
+  background-image: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0) 0px,
+    rgba(0, 0, 0, 0) 1px,
+    rgba(0, 0, 0, 0.03) 1px,
+    rgba(0, 0, 0, 0.03) 2px
+  );
+  animation: scanlines 8s linear infinite;
+}
+
+@keyframes scanlines {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 0 10px;
+  }
+}
+
+/* Screen Flicker */
+.game-wrapper::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(18, 16, 16, 0);
+  pointer-events: none;
+  z-index: 997;
+  animation: flicker 0.15s infinite;
+}
+
+@keyframes flicker {
+  0% {
+    opacity: 0.27861;
+  }
+  5% {
+    opacity: 0.34769;
+  }
+  10% {
+    opacity: 0.23604;
+  }
+  15% {
+    opacity: 0.90626;
+  }
+  20% {
+    opacity: 0.18128;
+  }
+  25% {
+    opacity: 0.83891;
+  }
+  30% {
+    opacity: 0.65583;
+  }
+  35% {
+    opacity: 0.67807;
+  }
+  40% {
+    opacity: 0.26559;
+  }
+  45% {
+    opacity: 0.84693;
+  }
+  50% {
+    opacity: 0.96019;
+  }
+  55% {
+    opacity: 0.08594;
+  }
+  60% {
+    opacity: 0.20313;
+  }
+  65% {
+    opacity: 0.71988;
+  }
+  70% {
+    opacity: 0.53455;
+  }
+  75% {
+    opacity: 0.37288;
+  }
+  80% {
+    opacity: 0.71428;
+  }
+  85% {
+    opacity: 0.70419;
+  }
+  90% {
+    opacity: 0.7003;
+  }
+  95% {
+    opacity: 0.36108;
+  }
+  100% {
+    opacity: 0.24387;
+  }
+}
+
+/* RGB Shift Effect */
+.game-wrapper::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    0deg,
+    #0000 0%,
+    #0000 50%,
+    #111 50%,
+    #111 100%
+  );
+  background-size: 0 2px;
+  pointer-events: none;
+  z-index: 996;
+  opacity: 0.1;
+  animation: rgb-shift 5s ease-in-out infinite;
+}
+
+@keyframes rgb-shift {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  33% {
+    transform: translateX(1px);
+  }
+  66% {
+    transform: translateX(-1px);
+  }
+}
+
+/* Phosphor Glow Effect */
+.story-text,
+.choice-btn,
+.player-input,
+.game-title,
+.status-value {
+  text-shadow: 
+    0 0 2px var(--glow-color),
+    0 0 4px var(--glow-color),
+    0 0 6px var(--glow-color);
+}
+
+/* Screen Distortion */
+body.crt-active {
+  animation: distortion 3s infinite;
+}
+
+@keyframes distortion {
+  0%, 100% {
+    transform: skew(0deg, 0deg);
+  }
+  25% {
+    transform: skew(0.5deg, 0deg);
+  }
+  50% {
+    transform: skew(0deg, 0.5deg);
+  }
+  75% {
+    transform: skew(-0.5deg, 0deg);
+  }
+}
+
+/* Bad Signal Effect */
+.bad-signal {
+  animation: bad-signal 0.5s linear;
+}
+
+@keyframes bad-signal {
+  0% {
+    filter: brightness(1) contrast(1);
+  }
+  10% {
+    filter: brightness(0.8) contrast(1.2) hue-rotate(5deg);
+  }
+  20% {
+    filter: brightness(1.2) contrast(0.8) hue-rotate(-5deg);
+  }
+  30% {
+    filter: brightness(0.9) contrast(1.1) hue-rotate(0deg);
+  }
+  40% {
+    filter: brightness(1.1) contrast(0.9) hue-rotate(2deg);
+  }
+  50% {
+    filter: brightness(0.95) contrast(1.05) hue-rotate(-2deg);
+  }
+  60% {
+    filter: brightness(1.05) contrast(0.95) hue-rotate(0deg);
+  }
+  70% {
+    filter: brightness(0.98) contrast(1.02) hue-rotate(1deg);
+  }
+  80% {
+    filter: brightness(1.02) contrast(0.98) hue-rotate(-1deg);
+  }
+  90% {
+    filter: brightness(0.99) contrast(1.01) hue-rotate(0deg);
+  }
+  100% {
+    filter: brightness(1) contrast(1);
+  }
+}
+
+/* Turn On Effect */
+@keyframes turn-on {
+  0% {
+    transform: scale(1, 0.8) translate(0, 0);
+    filter: brightness(30);
+    opacity: 1;
+  }
+  3% {
+    transform: scale(1, 0.8) translate(0, 100%);
+  }
+  6% {
+    transform: scale(1, 0.8) translate(0, -100%);
+  }
+  9% {
+    transform: scale(1.3, 0.6) translate(0, 100%);
+  }
+  12% {
+    transform: scale(1, 1) translate(0, 0);
+    filter: brightness(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1, 1) translate(0, 0);
+    filter: brightness(1);
+    opacity: 1;
+  }
+}
+
+.turn-on {
+  animation: turn-on 0.8s linear;
+}
+
+/* Turn Off Effect */
+@keyframes turn-off {
+  0% {
+    transform: scale(1, 1) translate(0, 0);
+    filter: brightness(1);
+    opacity: 1;
+  }
+  20% {
+    transform: scale(1.3, 0.6) translate(0, 0);
+    filter: brightness(10);
+  }
+  40% {
+    transform: scale(1, 0.2) translate(0, 0);
+    filter: brightness(50);
+  }
+  60% {
+    transform: scale(0.2, 0.2) translate(0, 0);
+  }
+  100% {
+    transform: scale(0, 0) translate(0, 0);
+    filter: brightness(50);
+    opacity: 0;
+  }
+}
+
+.turn-off {
+  animation: turn-off 0.4s linear;
+}
+
+/* Noise Effect */
+.noise {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0.02;
+  z-index: 995;
+  background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23noise)" opacity="1"/></svg>');
+}
+
+/* Disable CRT effects */
+body.no-crt .crt-overlay,
+body.no-crt .scanlines,
+body.no-crt .game-wrapper::before,
+body.no-crt .game-wrapper::after,
+body.no-crt .noise {
+  display: none;
+}
+
+body.no-crt .story-text,
+body.no-crt .choice-btn,
+body.no-crt .player-input,
+body.no-crt .game-title,
+body.no-crt .status-value {
+  text-shadow: none;
+}
+
+/* Media Queries for Performance */
+@media (max-width: 768px) {
+  /* Reduce effects on mobile for better performance */
+  .scanlines {
+    opacity: 0.5;
+  }
+  
+  .game-wrapper::before {
+    animation: none;
+    opacity: 0.05;
+  }
+  
+  .game-wrapper::after {
+    display: none;
+  }
+  
+  .noise {
+    display: none;
+  }
+}

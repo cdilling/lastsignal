@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Debug Test</title>
+  <style>
+    body { background: #1a1a1a; color: #0f0; font-family: monospace; padding: 20px; }
+    #log { border: 1px solid #0f0; padding: 10px; margin-top: 20px; }
+    .error { color: #f00; }
+    .success { color: #0f0; }
+  </style>
+</head>
+<body>
+  <h1>Debug Test</h1>
+  <div id="log"></div>
+  
+  <script type="module">
+    const log = document.getElementById('log');
+    
+    function addLog(msg, isError = false) {
+      const p = document.createElement('p');
+      p.className = isError ? 'error' : 'success';
+      p.textContent = msg;
+      log.appendChild(p);
+    }
+    
+    try {
+      // Test 1: Check environment variables
+      addLog('Environment vars: ' + JSON.stringify(import.meta.env));
+      
+      // Test 2: Import Story
+      import('/node_modules/.vite/deps/inkjs.js?v=c2efac4e').then(module => {
+        addLog('✓ inkjs loaded');
+        window.Story = module.Story;
+        
+        // Test 3: Import our story
+        import('/src/story/minimal-story.js').then(storyModule => {
+          addLog('✓ Story file loaded');
+          
+          try {
+            const story = new window.Story(storyModule.compiledStory);
+            addLog('✓ Story created successfully!');
+            
+            // Try to get some content
+            if (story.canContinue) {
+              const text = story.Continue();
+              addLog('First line: ' + text);
+            }
+          } catch (e) {
+            addLog('✗ Story creation failed: ' + e.message, true);
+            console.error(e);
+          }
+        }).catch(e => {
+          addLog('✗ Failed to load story file: ' + e.message, true);
+        });
+      }).catch(e => {
+        addLog('✗ Failed to load inkjs: ' + e.message, true);
+      });
+      
+    } catch (e) {
+      addLog('✗ General error: ' + e.message, true);
+      console.error(e);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Test Actual Story</title>
+  <style>
+    body { background: #000; color: #0f0; font-family: monospace; padding: 20px; }
+    .error { color: #f00; }
+    pre { white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <h1>Testing Actual Story</h1>
+  <pre id="output"></pre>
+  
+  <script type="module">
+    const output = document.getElementById('output');
+    
+    function log(msg) {
+      output.textContent += msg + '\n';
+    }
+    
+    try {
+      const { Story } = await import('/node_modules/.vite/deps/inkjs.js?v=c2efac4e');
+      const { compiledStory } = await import('/src/story/minimal-story.js');
+      
+      log('Creating story...');
+      const story = new Story(compiledStory);
+      
+      log('Story state:');
+      log('- canContinue: ' + story.canContinue);
+      log('- currentText: ' + story.currentText);
+      log('- currentChoices: ' + story.currentChoices.length);
+      
+      // The issue might be that the story starts at "root" and has a redirect to "START"
+      // Let's see what happens when we continue
+      let stepCount = 0;
+      while (story.canContinue && stepCount < 10) {
+        const text = story.Continue();
+        log(`\nStep ${stepCount}: "${text}"`);
+        stepCount++;
+      }
+      
+      log('\nAfter continuing:');
+      log('- canContinue: ' + story.canContinue);
+      log('- currentChoices: ' + story.currentChoices.length);
+      
+      if (story.currentChoices.length > 0) {
+        log('\nChoices:');
+        story.currentChoices.forEach((choice, i) => {
+          log(`  ${i}: ${choice.text}`);
+        });
+      }
+      
+      // Check if we need to navigate to START manually
+      log('\nTrying to go to START knot...');
+      try {
+        story.ChoosePathString('START');
+        log('Successfully navigated to START');
+        
+        while (story.canContinue && stepCount < 20) {
+          const text = story.Continue();
+          log(`Step ${stepCount}: "${text}"`);
+          stepCount++;
+        }
+        
+        log('\nAfter START:');
+        log('- currentChoices: ' + story.currentChoices.length);
+        if (story.currentChoices.length > 0) {
+          story.currentChoices.forEach((choice, i) => {
+            log(`  Choice ${i}: ${choice.text}`);
+          });
+        }
+      } catch (e) {
+        log('ERROR navigating to START: ' + e.message);
+      }
+      
+    } catch (e) {
+      log('ERROR: ' + e.message);
+      log('Stack:\n' + e.stack);
+    }
+  </script>
+</body>
+</html>

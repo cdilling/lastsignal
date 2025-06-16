@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Minimal Test</title>
+  <style>
+    body { background: #000; color: #0f0; font-family: monospace; padding: 20px; }
+    button { display: block; margin: 5px 0; padding: 10px; background: #003300; color: #0f0; border: 1px solid #0f0; cursor: pointer; }
+    #error { color: #f00; }
+  </style>
+</head>
+<body>
+  <h1>Minimal Ink Test</h1>
+  <div id="output"></div>
+  <div id="choices"></div>
+  <div id="error"></div>
+  
+  <script type="module">
+    const output = document.getElementById('output');
+    const choicesDiv = document.getElementById('choices');
+    const errorDiv = document.getElementById('error');
+    
+    function log(msg) {
+      console.log(msg);
+      output.innerHTML += msg + '<br>';
+    }
+    
+    function showError(msg) {
+      console.error(msg);
+      errorDiv.innerHTML += msg + '<br>';
+    }
+    
+    try {
+      log('Loading modules...');
+      
+      const { Story } = await import('/node_modules/.vite/deps/inkjs.js?v=c2efac4e');
+      log('✓ Loaded inkjs');
+      
+      const { compiledStory } = await import('/src/story/test-story.js');
+      log('✓ Loaded story data');
+      
+      log('Creating story instance...');
+      const story = new Story(compiledStory);
+      log('✓ Story created');
+      
+      log('Checking if story can continue...');
+      log('canContinue: ' + story.canContinue);
+      
+      // Get initial content
+      while (story.canContinue) {
+        const text = story.Continue();
+        log('Story text: ' + text);
+      }
+      
+      // Show choices
+      log('Current choices: ' + story.currentChoices.length);
+      story.currentChoices.forEach((choice, i) => {
+        const btn = document.createElement('button');
+        btn.textContent = (i + 1) + '. ' + choice.text;
+        btn.onclick = () => {
+          choicesDiv.innerHTML = '';
+          story.ChooseChoiceIndex(i);
+          log('Chose: ' + choice.text);
+          
+          while (story.canContinue) {
+            const text = story.Continue();
+            log('Result: ' + text);
+          }
+        };
+        choicesDiv.appendChild(btn);
+      });
+      
+    } catch (e) {
+      showError('ERROR: ' + e.message);
+      showError('Stack: ' + e.stack);
+    }
+  </script>
+</body>
+</html>

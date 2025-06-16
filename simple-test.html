@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>The Last Signal - Simple</title>
+  <style>
+    body {
+      background: #000;
+      color: #0f0;
+      font-family: 'Courier New', monospace;
+      padding: 20px;
+      margin: 0;
+    }
+    #output {
+      margin-bottom: 20px;
+      white-space: pre-wrap;
+    }
+    #choices button {
+      display: block;
+      background: #001a00;
+      color: #0f0;
+      border: 1px solid #0f0;
+      padding: 10px;
+      margin: 5px 0;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    #choices button:hover {
+      background: #003300;
+    }
+    #input-form {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    #input {
+      flex: 1;
+      background: #001a00;
+      color: #0f0;
+      border: 1px solid #0f0;
+      padding: 5px;
+      font-family: inherit;
+    }
+  </style>
+</head>
+<body>
+  <h1>THE LAST SIGNAL</h1>
+  <div id="output"></div>
+  <div id="choices"></div>
+  <form id="input-form">
+    <span>&gt;</span>
+    <input type="text" id="input" placeholder="Type 'begin' to start..." autofocus>
+  </form>
+
+  <script type="module">
+    // Simple working version
+    import { Story } from '/node_modules/.vite/deps/inkjs.js?v=c2efac4e';
+    import { compiledStory } from '/src/story/minimal-story.js';
+    
+    const output = document.getElementById('output');
+    const choices = document.getElementById('choices');
+    const inputForm = document.getElementById('input-form');
+    const input = document.getElementById('input');
+    
+    let story = null;
+    
+    function addText(text) {
+      output.textContent += text;
+      output.scrollTop = output.scrollHeight;
+    }
+    
+    function showChoices() {
+      choices.innerHTML = '';
+      if (story.currentChoices.length > 0) {
+        story.currentChoices.forEach((choice, i) => {
+          const btn = document.createElement('button');
+          btn.textContent = choice.text;
+          btn.onclick = () => {
+            story.ChooseChoiceIndex(i);
+            addText('\n> ' + choice.text + '\n\n');
+            continueStory();
+          };
+          choices.appendChild(btn);
+        });
+      }
+    }
+    
+    function continueStory() {
+      while (story.canContinue) {
+        const text = story.Continue();
+        addText(text);
+      }
+      showChoices();
+    }
+    
+    // Initialize
+    try {
+      story = new Story(compiledStory);
+      addText("Story loaded! Type 'begin' to start.\n\n");
+    } catch (e) {
+      addText("Error loading story: " + e.message + "\n");
+      console.error(e);
+    }
+    
+    // Handle input
+    inputForm.onsubmit = (e) => {
+      e.preventDefault();
+      const cmd = input.value.trim().toLowerCase();
+      input.value = '';
+      
+      if (cmd === 'begin' || cmd === 'start' || cmd === 'wake up') {
+        output.textContent = '';
+        continueStory();
+      } else {
+        addText('> ' + cmd + '\n');
+        addText("Unknown command. Type 'begin' to start.\n\n");
+      }
+    };
+  </script>
+</body>
+</html>

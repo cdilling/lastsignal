@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Last Signal</title>
+  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="crt-effects.css">
+</head>
+<body>
+  <div class="game-wrapper">
+    <!-- CRT Monitor Effect -->
+    <div class="crt-overlay"></div>
+    <div class="scanlines"></div>
+    
+    <!-- API Key Setup -->
+    <div id="api-key-section" class="api-key-section">
+      <div class="terminal-window">
+        <div class="terminal-header">
+          <span class="terminal-title">SYSTEM INITIALIZATION</span>
+        </div>
+        <div class="terminal-content">
+          <h1 class="game-title glitch" data-text="THE LAST SIGNAL">THE LAST SIGNAL</h1>
+          <p class="system-message">Neural interface requires API authorization...</p>
+          
+          <form id="api-key-form" class="api-form">
+            <label for="api-key-input">OpenAI API Key:</label>
+            <input 
+              type="password" 
+              id="api-key-input" 
+              class="api-input" 
+              placeholder="sk-..." 
+              required
+              autocomplete="off"
+            >
+            <button type="submit" class="terminal-button">INITIALIZE</button>
+          </form>
+          
+          <div class="api-info">
+            <p>Don't have an API key? <a href="https://platform.openai.com/api-keys" target="_blank" class="terminal-link">Get one here</a></p>
+            <p class="warning">Your API key is stored locally and never sent to any server except OpenAI.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Game Container -->
+    <div id="game-container" class="game-container" style="display: none;">
+      <header class="game-header">
+        <h1 class="game-title-small">THE LAST SIGNAL</h1>
+        <div class="status-bar">
+          <span id="location" class="status-item">Location: <span class="status-value">Unknown</span></span>
+          <span id="signal-strength" class="status-item">Signal: <span class="status-value">---%</span></span>
+          <span id="time" class="status-item">Time: <span class="status-value">--:--</span></span>
+        </div>
+      </header>
+
+      <main class="game-main">
+        <!-- Game Output -->
+        <div id="game-output" class="game-output">
+          <!-- Story text will appear here -->
+        </div>
+
+        <!-- Input Section -->
+        <div class="input-section">
+          <form id="input-form" class="input-form">
+            <span class="prompt">&gt;</span>
+            <input 
+              type="text" 
+              id="player-input" 
+              class="player-input" 
+              placeholder="Enter command or choice..." 
+              autocomplete="off"
+              autofocus
+            >
+          </form>
+        </div>
+      </main>
+
+      <footer class="game-footer">
+        <div class="game-controls">
+          <button id="save-btn" class="control-btn" title="Save Game">SAVE</button>
+          <button id="load-btn" class="control-btn" title="Load Game">LOAD</button>
+          <button id="help-btn" class="control-btn" title="Help">HELP</button>
+          <button id="settings-btn" class="control-btn" title="Settings">SETTINGS</button>
+        </div>
+      </footer>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal" style="display: none;">
+      <div class="modal-content">
+        <h2>Settings</h2>
+        <div class="settings-group">
+          <label>
+            <input type="checkbox" id="crt-effects" checked>
+            CRT Monitor Effects
+          </label>
+          <label>
+            <input type="checkbox" id="typing-effects" checked>
+            Typing Animation
+          </label>
+          <label>
+            <input type="checkbox" id="sound-effects" checked>
+            Sound Effects
+          </label>
+        </div>
+        <div class="settings-group">
+          <label>Text Speed:
+            <input type="range" id="text-speed" min="10" max="100" value="30">
+          </label>
+        </div>
+        <button class="terminal-button" onclick="closeSettings()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Load Scripts -->
+  <script type="module" src="main.js"></script>
+</body>
+</html>

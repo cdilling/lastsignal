@@ -1,0 +1,50 @@
+Project: The Last Signal - AI-Enhanced Text Adventure
+Tech Stack: Vanilla JS, Ink.js, Future: Supabase
+Style: Green phosphor CRT terminal aesthetic
+AI Integration: Dynamic story generation via Claude API
+Keep code modular and well-commented for non-developer understanding
+
+Game Overview:
+- Space station horror/mystery text adventure
+- Player is Communications Officer Sarah Chen
+- 200 crew members missing on Aurora-7 station
+- Mysterious signal from Sector 7
+- Story branches based on player choices
+
+Key Features:
+- Ink narrative engine for story flow
+- CRT terminal visual effects
+- Save/load game state
+- AI narrator for dynamic descriptions
+- Parser for natural language input
+
+Code Style Guidelines:
+- Use ES6+ JavaScript features
+- Modular architecture with clear separation of concerns
+- Comprehensive comments for non-developer readability
+- Consistent naming conventions (camelCase for functions/variables)
+- Error handling with user-friendly messages
+
+File Structure:
+- src/story/ - Ink story files
+- src/js/ - Game logic and systems
+- src/css/ - Styling and effects
+- src/assets/ - Audio and other media
+
+Development Notes:
+- Test thoroughly in multiple browsers
+- Ensure accessibility features
+- Mobile-responsive design
+- Performance optimization for smooth CRT effects
+
+AI Integration Details:
+- AI narrator enhances story with dynamic descriptions
+- AI should respect story boundaries and maintain tone
+- Use AI for atmospheric descriptions, not core plot changes
+- Implement fallback mechanisms for AI failures
+- AI responses should feel seamless with authored content
+- Maintain consistent characterization and world rules
+- Use AI to generate variations in environmental descriptions
+- AI can provide contextual hints based on player actions
+- Never let AI contradict established story facts
+- Cache AI responses for performance optimization
