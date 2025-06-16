@@ -317,26 +317,27 @@ body {
   font-size: 14px;
 }
 
-/* Game Container - Full viewport */
+/* Game Container - Simple fixed layout */
 .game-container {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  width: 100%;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
   background: var(--terminal-bg);
-  overflow: hidden; /* Prevent any overflow */
 }
 
-/* Game Header */
+/* Game Header - Fixed at top */
 .game-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
   background: linear-gradient(to bottom, #111 0%, #000 100%);
   border-bottom: 2px solid var(--border-color);
   padding: 15px 20px;
+  z-index: 10;
 }
 
 .status-bar {
@@ -355,14 +356,16 @@ body {
   font-weight: bold;
 }
 
-/* Terminal Viewport - The "CRT Screen" */
+/* Terminal Viewport - Fixed scrollable area */
 .game-terminal {
-  flex: 1; /* Take remaining space between header and input/footer */
+  position: absolute;
+  top: 80px; /* Height of header */
+  bottom: 140px; /* Height of input + footer */
+  left: 0;
+  right: 0;
   overflow-y: auto;
   overflow-x: hidden;
   padding: 20px;
-  position: relative;
-  scroll-behavior: smooth;
   background: var(--terminal-bg);
   border-top: 1px solid var(--border-color);
   border-bottom: 1px solid var(--border-color);
@@ -496,13 +499,16 @@ body {
   transform: none !important;
 }
 
-/* Input Section - Fixed at bottom */
+/* Input Section - Absolutely fixed at bottom */
 .input-section {
-  flex-shrink: 0;
+  position: absolute;
+  bottom: 60px; /* Height of footer */
+  left: 0;
+  right: 0;
   background: linear-gradient(to top, #111 0%, #000 100%);
   border-top: 2px solid var(--border-color);
   padding: 15px 20px;
-  z-index: 10; /* Ensure it stays above terminal content */
+  z-index: 10;
 }
 
 .input-form {
@@ -528,13 +534,17 @@ body {
   caret-color: var(--primary-color);
 }
 
-/* Game Footer - Fixed at bottom */
+/* Game Footer - Absolutely fixed at bottom */
 .game-footer {
-  flex-shrink: 0;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
   background: var(--terminal-bg);
   border-top: 1px solid var(--border-color);
   padding: 10px 20px;
-  z-index: 10; /* Ensure it stays above terminal content */
+  z-index: 10;
 }
 
 .game-controls {

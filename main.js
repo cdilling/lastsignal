@@ -2,7 +2,7 @@ import { Story } from 'inkjs';
 import { GameEngine } from './game-engine.js';
 import { Parser } from './parser.js';
 import { SaveSystem } from './save-system.js';
-import { compiledStory } from './src/story/working-game.js';
+import { compiledStory } from './src/story/full-game-story.js';
 import AINarrator from './src/js/ai-narrator.js';
 import { TextRenderer } from './text-renderer.js';
 
