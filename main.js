@@ -2,7 +2,7 @@ import { Story } from 'inkjs';
 import { GameEngine } from './game-engine.js';
 import { Parser } from './parser.js';
 import { SaveSystem } from './save-system.js';
-import { compiledStory } from './src/story/full-game-story.js';
+import { compiledStory } from './src/story/the-last-signal-complete.js';
 import AINarrator from './src/js/ai-narrator.js';
 import { TextRenderer } from './text-renderer.js';
 
@@ -125,8 +125,18 @@ class LastSignalGame {
     const existingChoices = document.querySelectorAll('.choices');
     existingChoices.forEach(el => el.remove());
     
-    while (this.story.canContinue) {
+    // Add loop protection
+    let iterations = 0;
+    const maxIterations = 1000;
+    
+    while (this.story.canContinue && iterations < maxIterations) {
+      iterations++;
       let text = this.story.Continue();
+      
+      // Skip empty lines to prevent infinite loops on empty content
+      if (!text || text.trim() === '') {
+        continue;
+      }
       
       // Check for AI response markers
       if (text.includes('[AI_RESPONSE]')) {
@@ -150,9 +160,18 @@ class LastSignalGame {
       }
     }
     
+    // Check if we hit the iteration limit
+    if (iterations >= maxIterations) {
+      console.error('Story loop detected - maximum iterations reached');
+      await this.displayText('\n[Error: Story loop detected. Please reload the game.]\n');
+    }
+    
     // Display choices if available
     if (this.story.currentChoices.length > 0) {
       await this.displayChoices(this.story.currentChoices);
+    } else if (!this.story.canContinue) {
+      // Story has ended
+      await this.displayText('\n[THE END - Thank you for playing The Last Signal]\n');
     }
   }
 
@@ -234,11 +253,16 @@ class LastSignalGame {
     const context = this.getGameContext();
     const analysis = await this.engine.analyzePlayerChoice(choice.text, context);
     
-    // Continue story with choice
-    this.story.ChooseChoiceIndex(choiceIndex);
-    
-    // Continue story
-    this.continueStory();
+    try {
+      // Continue story with choice
+      this.story.ChooseChoiceIndex(choiceIndex);
+      
+      // Continue story
+      await this.continueStory();
+    } catch (error) {
+      console.error('Error processing choice:', error);
+      await this.displayText('\n[Error: Failed to process choice. Please try again.]\n');
+    }
   }
 
   disableAllChoices() {
@@ -282,7 +306,7 @@ class LastSignalGame {
     const startCommands = ['begin', 'start', 'wake up', 'wake', 'new game', 'play'];
     if (startCommands.includes(input.toLowerCase().trim())) {
       await this.textRenderer.displayUserChoice(input);
-      this.beginStory();
+      await this.beginStory();
       return;
     }
     
@@ -356,13 +380,18 @@ class LastSignalGame {
     await this.continueStory();
   }
   
-  beginStory() {
+  async beginStory() {
     // Clear the intro text
     this.textRenderer.clear();
     
     // Just continue the story from the beginning
     if (this.story) {
-      this.continueStory();
+      try {
+        await this.continueStory();
+      } catch (error) {
+        console.error('Error starting story:', error);
+        await this.displayText('\n[Error: Failed to start story. Please reload the game.]\n');
+      }
     }
   }
 
